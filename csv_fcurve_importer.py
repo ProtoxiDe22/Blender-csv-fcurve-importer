@@ -4,7 +4,7 @@
 ***** BEGIN BSD LICENSE BLOCK *****
 
 --------------------------------------------------------------------------
-CSV F-Curve Importer v0.7 alpha5
+CSV F-Curve Importer v0.7 alpha6
 --------------------------------------------------------------------------
 
 Copyright (c) 2015 Hans.P.G. All rights reserved.
@@ -101,14 +101,15 @@ History:
 bl_info = {
     "name": "CSV F-Curve Importer",
     "author": "Hans.P.G.",
-    "version": (0, 7, 5),
-    "blender": (2, 5, 7),
+    "version": (0, 7, 6),
+    "blender": (2, 80, 0),
     "location": "Properties space > Scene tab > CSV F-Curve Importer panel",
     "description": "Import .csv file and create f-curves",
     "warning": "",
     "wiki_url": "",
     "tracker_url": "",
-    "category": "Import-Export"}
+    "category": "Import-Export"
+    }
 
 
 import bpy
@@ -366,7 +367,11 @@ class FCurveAccessor:
         
         fcurve = cls.get(action, path_name, index)
         if fcurve == None:
-            return action.fcurves.new(path_name, index, *args)
+            if len(args)>0:
+                return action.fcurves.new(data_path=path_name, index =index, action_group = args[0])
+            else:
+                
+                return action.fcurves.new(data_path=path_name, index =index)
         else:
             return fcurve
 
@@ -512,19 +517,18 @@ class OBJECT_PT_CsvFcurveImporter(bpy.types.Panel):
 
         row2 = col1.row(align=True)
         row2.prop(config_top, "import_mode", text="")
-        row2.operator("scene.csv_fcurve_importer_import", text="Import")
         
 #        row2 = col1.row()
 #        row2.operator("scene.csv_fcurve_importer_???", icon="TEXT", text="Log") # [Need Modify]
 #        row2.operator("scene.csv_fcurve_importer_???", icon="SCRIPT", text="Script") # [Need Modify]
         
         row2 = col1.row(align=True)
-#        row2.operator("scene.csv_fcurve_importer_show_file_detail", icon='TRIA_RIGHT', text="", emboss=False)
-        row2.label(".csv File Path:")
+#        row2.operator("scene.csv_fcurve_importer_show_file_detail", icon='QUESTION', text="", emboss=False)
+        row2.label(text=".csv File Path:")
         col1.prop(config_top, "file_path", text="")
 
         row2 = col1.row(align=True)
-        row2.label("Delimiter:")
+        row2.label(text="Delimiter:")
         row2 = col1.row(align=True)
         col3 = row2.row(align=True)
         col3.prop(config_top, "deli_comma")
@@ -534,9 +538,9 @@ class OBJECT_PT_CsvFcurveImporter(bpy.types.Panel):
         col3.prop(config_top, "deli_tab")
         col3.prop(config_top, "deli_else", text="Else")
         
-        col1.label("Column and F-Curve Configurations:")
+        col1.label(text="Column and F-Curve Configurations:")
         if not config_top.fcurve_configs:
-            col1.operator("scene.csv_fcurve_importer_create", icon="NEW", text="Add").index = 0
+            col1.operator("scene.csv_fcurve_importer_create", icon="NONE", text="Add").index = 0
         
         for index, config in enumerate(config_top.fcurve_configs):
             
@@ -545,12 +549,12 @@ class OBJECT_PT_CsvFcurveImporter(bpy.types.Panel):
             
             row4 = col3.row(align=True)
             if config.is_collapsed:
-                row4.operator("scene.csv_fcurve_importer_collapse", icon='TRIA_RIGHT', text="", emboss=False).index = index
+                row4.operator("scene.csv_fcurve_importer_collapse", icon='GRAPH', text="", emboss=False).index = index
             else:
-                row4.operator("scene.csv_fcurve_importer_collapse", icon='TRIA_DOWN', text="", emboss=False).index = index
-            row4.label(config.get_name(), 'IPO')
-            row4.operator("scene.csv_fcurve_importer_copy", icon='GHOST', text="").index = index
-            row4.operator("scene.csv_fcurve_importer_remove", icon='PANEL_CLOSE', text="").index = index
+                row4.operator("scene.csv_fcurve_importer_collapse", icon='GRAPH', text="", emboss=False).index = index
+            row4.label(text=config.get_name())
+            row4.operator("scene.csv_fcurve_importer_copy", icon='DUPLICATE', text="").index = index
+            row4.operator("scene.csv_fcurve_importer_remove", icon='TRASH', text="").index = index
             
             if config.is_collapsed:
                 continue
@@ -561,37 +565,39 @@ class OBJECT_PT_CsvFcurveImporter(bpy.types.Panel):
 
             row4 = col3.row()
             col5 = row4.column()
-            col5.label("Action Name:", icon='ACTION')
+            col5.label(text="Action Name:", icon='NONE')
             row6 = col5.row(align=True)
-            row6.prop(config, "action_name__use_suggestion", text="", icon='VIEWZOOM')
+            row6.prop(config, "action_name__use_suggestion", text="", icon='SYSTEM')
             if config.action_name__use_suggestion:
                 row6.prop_search(config, "action_name", bpy.data, "actions", text="")
             else:
                 row6.prop(config, "action_name", text="")
             
             col5 = row4.column()
-            col5.label("Data Path:", icon='RNA')
+            col5.label(text="Data Path:", icon='NONE')
             col6 = col5.column(align=True)
             row7 = col6.row(align=True)
-            row7.prop(config, "data_path__use_suggestion", text="", icon='COLLAPSEMENU')
+            row7.prop(config, "data_path__use_suggestion", text="", icon='PLUGIN')
             if config.data_path__use_suggestion:
-                # row7.prop_search(config, "data_path", config_top, "data_path_candidates", text="", icon='RNA') # [Gave Up]
+                # row7.prop_search(config, "data_path", config_top, "data_path_candidates", text="", icon='QUESTION') # [Gave Up]
                 row7.prop(config, "data_path_candidates", text="")
             else:
                 row7.prop(config, "data_path", text="")
             col6.prop(config, "data_path_index", text=self.__class__.get_data_path_index_text(config.data_path_index))
             
-            # WannaDo: [Need Modify]
-            # +create/not action name
-            # +create/not data path
-            # +add detail extension button
-            #  +radian/degree if necessary
-            #  +object to import: selected/name, create/not
-            #  +f-curve extrapolation, interpolation_type, handle_type
-            #  +converter for time and data
-            #  +thin down sampling
-            # +output these configs to python code
-            # +import automatically -> use "exec"
+            
+        col1.operator("scene.csv_fcurve_importer_import", text="Import")
+        # WannaDo: [Need Modify]
+        # +create/not action name
+        # +create/not data path
+        # +add detail extension button
+        #  +radian/degree if necessary
+        #  +object to import: selected/name, create/not
+        #  +f-curve extrapolation, interpolation_type, handle_type
+        #  +converter for time and data
+        #  +thin down sampling
+        # +output these configs to python code
+        # +import automatically -> use "exec"
             
     @staticmethod
     def get_data_path_index_text(index):
@@ -758,17 +764,32 @@ class OBJECT_OP_CsvFcurveImporter_Collapse(bpy.types.Operator):
     
 #---=== Register ===
 
+classes = (
+    FCurveImportUIConfig,
+    DataPathCandidate,
+    ImporterUIConfig,
+    OBJECT_PT_CsvFcurveImporter,
+    OBJECT_OP_CsvFcurveImporter_Import,
+    OBJECT_OP_CsvFcurveImporter_ShowFileDetail,
+    OBJECT_OP_CsvFcurveImporter_Create,
+    OBJECT_OP_CsvFcurveImporter_Copy,
+    OBJECT_OP_CsvFcurveImporter_Remove,
+    OBJECT_OP_CsvFcurveImporter_Collapse,
+)
+
 def register():
-    
-    bpy.utils.register_module(__name__)
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
     bpy.types.Scene.CONFIG_CsvFcurveImporter = bpy.props.PointerProperty(type=ImporterUIConfig)
     
     # init_data_path_candidates() # [Gave Up]
     # note: gave up Data Path suggestion using CollectionProperty.
 
 def unregister():
-    
-    bpy.utils.unregister_module(__name__)
+    from bpy.utils import unregister_class
+    for cls in classes:
+        register_class(cls)
 
     if bpy.context.scene.get('CONFIG_CsvFcurveImporter') != None:
         del bpy.context.scene['CONFIG_CsvFcurveImporter']
