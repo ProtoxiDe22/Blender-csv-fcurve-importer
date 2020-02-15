@@ -37,6 +37,8 @@ SUCH DAMAGE.
 ***** END BSD LICENCE BLOCK *****
 
 History:
+2020/02/15: v0.7 alpha6
+  + updated for blender 2.80.
 2015/05/10: v0.7 alpha5
   + added the checkboxes to select delimiter letters.
 2015/05/01: v0.7 alpha4
