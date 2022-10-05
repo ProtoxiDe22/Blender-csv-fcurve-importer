@@ -441,22 +441,22 @@ class Event:
 
 class FCurveImportUIConfig(bpy.types.PropertyGroup):
     
-    time_column = bpy.props.IntProperty(min=0, max=10000, default=0, 
+    time_column : bpy.props.IntProperty(min=0, max=10000, default=0, 
         description="Specify what number of the columns in a .csv file you import as a time data.")
-    data_column = bpy.props.IntProperty(min=0, max=10000, default=1, 
+    data_column : bpy.props.IntProperty(min=0, max=10000, default=1, 
         description="Specify what number of the columns in a .csv file you import as a value data.")
-    action_name__use_suggestion = bpy.props.BoolProperty(default=False, description="")
-    action_name = bpy.props.StringProperty(default="Imported", 
+    action_name__use_suggestion : bpy.props.BoolProperty(default=False, description="")
+    action_name : bpy.props.StringProperty(default="Imported", 
         description="Specify the name of Action object in which f-curves are created.")
-    data_path__use_suggestion = bpy.props.BoolProperty(default=False, description="")
-    data_path = bpy.props.StringProperty(default="location", 
+    data_path__use_suggestion : bpy.props.BoolProperty(default=False, description="")
+    data_path : bpy.props.StringProperty(default="location", 
         description="Specify the type of path, for example \"location\", \"rotation_euler\", \"scale\", etc. Or click right button over any textbox in Blender and select \"Copy Data Path\" in the menu, then put the copied name into here.")
-    data_path_candidates = bpy.props.EnumProperty(items=[("location", "location", ""), ("rotation_euler", "rotation_euler", ""), ("rotation_quaternion", "rotation_quaternion", ""), ("rotation_axis_angle", "rotation_axis_angle", ""), ("scale", "scale", ""), ("dimensions", "dimensions", "")], default="location",
+    data_path_candidates : bpy.props.EnumProperty(items=[("location", "location", ""), ("rotation_euler", "rotation_euler", ""), ("rotation_quaternion", "rotation_quaternion", ""), ("rotation_axis_angle", "rotation_axis_angle", ""), ("scale", "scale", ""), ("dimensions", "dimensions", "")], default="location",
         description="Select the type of path.")
-    data_path_index = bpy.props.IntProperty(min=0, max=10000, default=0, 
+    data_path_index : bpy.props.IntProperty(min=0, max=10000, default=0, 
         description="Specify the type of axis where 0 is x-axis, 1 is y-axis, and 2 is z-axis.")
     
-    is_collapsed = bpy.props.BoolProperty(default=False, description="")
+    is_collapsed : bpy.props.BoolProperty(default=False, description="")
         
     def get_name(self):
     
@@ -472,20 +472,20 @@ class DataPathCandidate(bpy.types.PropertyGroup):
 
 class ImporterUIConfig(bpy.types.PropertyGroup):
     
-    file_path = bpy.props.StringProperty(default="", subtype='FILE_PATH', 
+    file_path : bpy.props.StringProperty(default="", subtype='FILE_PATH', 
         description="Select a .csv file, then click \"Add\" button below and you'll see a configuration box created.")
-    deli_comma = bpy.props.BoolProperty(default=True, name="comma [,]", 
+    deli_comma : bpy.props.BoolProperty(default=True, name="comma [,]", 
         description="Specify comma as a delimiter of .csv file. (make columns at each comma)")
-    deli_space = bpy.props.BoolProperty(default=False, name="space [\\s]", 
+    deli_space : bpy.props.BoolProperty(default=False, name="space [\\s]", 
         description="Specify space as a delimiter of .csv file. (make columns at each space)")
-    deli_tab = bpy.props.BoolProperty(default=False, name="tab [\\t]", 
+    deli_tab : bpy.props.BoolProperty(default=False, name="tab [\\t]", 
         description="Specify tab as a delimiter of .csv file. (make columns at each tab)")
-    deli_else = bpy.props.StringProperty(default="", 
+    deli_else : bpy.props.StringProperty(default="", 
         description="Specify any other delimiters of .csv file. (taken as regular expression, e.g. ,\\s\\t;:)")
-    import_mode = bpy.props.EnumProperty(items=[("MANUAL", "Manually using configs below", "")], default="MANUAL", # [Need Modify]
+    import_mode : bpy.props.EnumProperty(items=[("MANUAL", "Manually using configs below", "")], default="MANUAL", # [Need Modify]
         description="Currently you can select only one option. (not implemented yet)")
     # import_mode = bpy.props.EnumProperty(items=[('MANUAL', "Manually using configs below", "manu"), ('AUTO', "Automatically using configs in file", "auto")], default='MANUAL')
-    fcurve_configs = bpy.props.CollectionProperty(type=FCurveImportUIConfig)
+    fcurve_configs : bpy.props.CollectionProperty(type=FCurveImportUIConfig)
     
     # data_path_candidates = bpy.props.CollectionProperty(type=DataPathCandidate) # [Gave Up]
     
@@ -697,7 +697,7 @@ class OBJECT_OP_CsvFcurveImporter_Create(bpy.types.Operator):
     bl_label = "Create an import configuration (CSV F-Curve Importer)"
     bl_description = "Create an import configuration"
     
-    index = bpy.props.IntProperty(min = -1, default = -1)
+    index : bpy.props.IntProperty(min = -1, default = -1)
     
     def execute(self, context):
         
@@ -714,7 +714,7 @@ class OBJECT_OP_CsvFcurveImporter_Copy(bpy.types.Operator):
     bl_label = "Copy an import configuration (CSV F-Curve Importer)"
     bl_description = "Copy an import configuration"
     
-    index = bpy.props.IntProperty(min = -1, default = -1)
+    index : bpy.props.IntProperty(min = -1, default = -1)
     
     def execute(self, context):
         
@@ -738,7 +738,7 @@ class OBJECT_OP_CsvFcurveImporter_Remove(bpy.types.Operator):
     bl_label = "Remove the import configuration (CSV F-Curve Importer)"
     bl_description = "Remove the import configuration"
 
-    index = bpy.props.IntProperty(min = -1, default = -1)
+    index : bpy.props.IntProperty(min = -1, default = -1)
     
     def execute(self, context):
 
@@ -753,7 +753,7 @@ class OBJECT_OP_CsvFcurveImporter_Collapse(bpy.types.Operator):
     bl_label = "Collapse/Expand the import configuration (CSV F-Curve Importer)"
     bl_description = "Collapse/Expand the import configuration"
     
-    index = bpy.props.IntProperty(min = -1, default = -1)
+    index : bpy.props.IntProperty(min = -1, default = -1)
     
     def execute(self, context):
 
